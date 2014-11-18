@@ -18,26 +18,34 @@ class ViewController : UIViewController, UICollectionViewDelegate, UICollectionV
     override func viewDidLoad()
     {
         super.viewDidLoad()
-        self.view.backgroundColor = UIColor.whiteColor()
+        self.view.addSubview(UIImageView(image: UIImage(named: "background")!))
         
-        self.numberOfItems = 61;
-        
+        self.collectionView.backgroundColor = UIColor.clearColor()
         self.collectionView.setTranslatesAutoresizingMaskIntoConstraints(false)
         self.collectionView.delegate = self
         self.collectionView.dataSource = self
-        self.collectionView.registerClass(UICollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
+        self.collectionView.registerClass(MenuCell.self, forCellWithReuseIdentifier: reuseIdentifier)
         
         self.view.addSubview(self.collectionView)
         self.view.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("|[collection]|", options: nil, metrics: nil, views: ["collection":collectionView]))
         self.view.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|[collection]|", options: nil, metrics: nil, views: ["collection":collectionView]))
-
-        // Do any additional setup after loading the view.
     }
-
+    
+    override func viewDidAppear(animated: Bool)
+    {
+        self.collectionView.centerContent()
+        self.numberOfItems = 61;
+        var indexPaths:[NSIndexPath] = []
+        
+        for index in 0..<self.numberOfItems {
+            indexPaths.append(NSIndexPath(forItem: index, inSection: 0))
+        }
+        self.collectionView.insertItemsAtIndexPaths(indexPaths)
+    }
+    
     override func didReceiveMemoryWarning()
     {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
 
     // MARK: UICollectionViewDataSource
@@ -54,11 +62,9 @@ class ViewController : UIViewController, UICollectionViewDelegate, UICollectionV
 
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell
     {
-        let cell = collectionView.dequeueReusableCellWithReuseIdentifier(reuseIdentifier, forIndexPath: indexPath) as UICollectionViewCell
-    
-        cell.backgroundColor = UIColor.blueColor()
-        cell.layer.cornerRadius = cell.layer.bounds.width/2
-        cell.layer.shouldRasterize = true
+        let cell = collectionView.dequeueReusableCellWithReuseIdentifier(reuseIdentifier, forIndexPath: indexPath) as MenuCell
+        
+        cell.icon.image = UIImage(named: "RoundIcons-Free-Set-\(indexPath.row+1)")
     
         return cell
     }

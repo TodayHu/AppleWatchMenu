@@ -26,7 +26,17 @@ class MenuCollectionView: UICollectionView
     {
         print("setup")
     }
-
-
+    
+    func centerContent()
+    {
+        let offsetX = (self.contentSize.width - self.bounds.size.width) / 2.0
+        let offsetY = (self.contentSize.height - self.bounds.size.height) / 2.0
+        self.contentOffset = CGPointMake(offsetX, offsetY);
+    }
+    
+    func contentCenter() -> CGPoint
+    {
+        return CGPointMake(self.contentSize.width/2, self.contentSize.height/2)
+    }
 
 }

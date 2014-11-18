@@ -10,7 +10,8 @@ import UIKit
 
 class MenuLayout: UICollectionViewLayout
 {
-    let itemSize = CGSizeMake(80, 80)
+    let itemSize = CGSizeMake(64, 64)
+    let contentSize = CGSizeMake(1000, 1000)
     
     required init(coder aDecoder: NSCoder)
     {
@@ -19,17 +20,34 @@ class MenuLayout: UICollectionViewLayout
     
     override func collectionViewContentSize() -> CGSize
     {
-        return CGSizeMake(1000, 1000)
+        return contentSize
+    }
+    
+    override func prepareForCollectionViewUpdates(updateItems: [AnyObject]!)
+    {
+    }
+    
+    override func initialLayoutAttributesForAppearingItemAtIndexPath(itemIndexPath: NSIndexPath) -> UICollectionViewLayoutAttributes?
+    {
+        super.initialLayoutAttributesForAppearingItemAtIndexPath(itemIndexPath)
+        let attributes = self.layoutAttributesForItemAtIndexPath(itemIndexPath)
+        attributes.transform = CGAffineTransformMakeScale(0.2, 0.2);
+        
+        return attributes;
     }
     
     override func layoutAttributesForElementsInRect(rect: CGRect) -> [AnyObject]?
     {
         var paths = self.indexPathsOfItemsInRect(rect)
         var attributes:[UICollectionViewLayoutAttributes] = []
+        var visibleRect = CGRect(origin: self.collectionView!.contentOffset, size: self.collectionView!.bounds.size)
         
-        for path in paths {
-            attributes.append(self.layoutAttributesForItemAtIndexPath(path))
+        if CGRectIntersectsRect(visibleRect, rect) {
+            for path in paths {
+                attributes.append(self.layoutAttributesForItemAtIndexPath(path))
+            }
         }
+        
         return attributes
     }
     
@@ -37,12 +55,21 @@ class MenuLayout: UICollectionViewLayout
     {
         var attributes = UICollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
         attributes.frame = self.frameForItemAtIndexPath(indexPath)
+        
+        var visibleRect = CGRect(origin: self.collectionView!.contentOffset, size: self.collectionView!.bounds.size)
+        let dx = (CGRectGetMidX(visibleRect) - attributes.center.x) / 160.0
+        let dy = (CGRectGetMidY(visibleRect) - attributes.center.y) / 280.0
+        let scale = 1 - sqrt(dx*dx + dy*dy)
+        let scaleFixed = (1 - sqrt(dx*dx + dy*dy)) < 0.3 ? 0.3 : scale
+
+        attributes.size = CGSizeMake(attributes.size.width * scaleFixed, attributes.size.height * scaleFixed)
+//        attributes.transform = CGAffineTransformScale(CGAffineTransformIdentity, scaleFixed, scaleFixed)
         return attributes
     }
     
     override func shouldInvalidateLayoutForBoundsChange(newBounds: CGRect) -> Bool
     {
-        return false
+        return true
     }
     
     // MARK: Helpers
@@ -60,7 +87,7 @@ class MenuLayout: UICollectionViewLayout
     
     func frameForItemAtIndexPath(indexPath: NSIndexPath) -> CGRect
     {
-        let center = self.collectionView!.center
+        let center = CGPointMake(self.contentSize.width/2 - self.itemSize.width/2, self.contentSize.height/2 - itemSize.height/2)
         let offset = CGFloat(self.offsetForItem(indexPath.row))
         let angle = CGFloat(self.angleForItem(indexPath.row))
         let origin = CGPoint(x: CGFloat(center.x + offset * cos(angle)), y: CGFloat(center.y + offset * sin(angle)))
