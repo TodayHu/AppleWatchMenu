@@ -22,9 +22,10 @@ class MenuCollectionView: UICollectionView
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setup()
+    func setInsets()
     {
-        print("setup")
+        let insetSize = CGSizeMake(CGFloat(self.frame.size.width / 2), CGFloat(self.frame.size.height / 2))
+        self.contentInset = UIEdgeInsets(top: insetSize.height, left: insetSize.width, bottom: insetSize.height, right: insetSize.width)
     }
     
     func centerContent()

@@ -138,7 +138,7 @@ class MenuLayout: UICollectionViewLayout
     func offsetForItem(index: Int) -> Double
     {
         let layerIndex = self.layerIndexForItemAtIndex(index)
-        return Double(layerIndex) * 1.2 * Double(self.itemSize.width)
+        return Double(layerIndex) * Double(self.itemSize.width) - Double(layerIndex*3) // Double(layerIndex*3) tightenes farther items to center
     }
     
     func angleForItem(index: Int) -> Double

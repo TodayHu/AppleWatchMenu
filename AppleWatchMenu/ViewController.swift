@@ -34,7 +34,7 @@ class ViewController : UIViewController, UICollectionViewDelegate, UICollectionV
     override func viewDidAppear(animated: Bool)
     {
         self.collectionView.centerContent()
-        self.numberOfItems = 61;
+        self.numberOfItems = 127;
         var indexPaths:[NSIndexPath] = []
         
         for index in 0..<self.numberOfItems {
@@ -64,7 +64,7 @@ class ViewController : UIViewController, UICollectionViewDelegate, UICollectionV
     {
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier(reuseIdentifier, forIndexPath: indexPath) as MenuCell
         
-        cell.icon.image = UIImage(named: "RoundIcons-Free-Set-\(indexPath.row+1)")
+        cell.icon.image = UIImage(named: "RoundIcons-Free-Set-\((indexPath.row+1) % 61)")
     
         return cell
     }
