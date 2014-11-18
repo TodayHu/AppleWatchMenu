@@ -14,17 +14,17 @@ class MenuCell: UICollectionViewCell {
     
     override init(frame: CGRect)
     {
-        icon.setTranslatesAutoresizingMaskIntoConstraints(false)
         super.init(frame: frame)
+        icon.setTranslatesAutoresizingMaskIntoConstraints(false)
         self.addSubview(icon)
-        setup()
+        setupConstraints()
     }
 
     required init(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setup()
+    func setupConstraints()
     {
         self.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("|[icon]|", options: nil, metrics: nil, views: ["icon":icon]))
         self.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|[icon]|", options: nil, metrics: nil, views: ["icon":icon]))

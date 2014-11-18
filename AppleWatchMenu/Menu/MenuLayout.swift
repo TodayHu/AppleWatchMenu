@@ -23,15 +23,15 @@ class MenuLayout: UICollectionViewLayout
         return contentSize
     }
     
-    override func prepareForCollectionViewUpdates(updateItems: [AnyObject]!)
-    {
-    }
+//    override func prepareForCollectionViewUpdates(updateItems: [AnyObject]!)
+//    {
+//    }
     
     override func initialLayoutAttributesForAppearingItemAtIndexPath(itemIndexPath: NSIndexPath) -> UICollectionViewLayoutAttributes?
     {
         super.initialLayoutAttributesForAppearingItemAtIndexPath(itemIndexPath)
         let attributes = self.layoutAttributesForItemAtIndexPath(itemIndexPath)
-        attributes.transform = CGAffineTransformMakeScale(0.2, 0.2);
+        attributes.transform = CGAffineTransformMakeScale(0.1, 0.1);
         
         return attributes;
     }

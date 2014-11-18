@@ -64,7 +64,7 @@ class ViewController : UIViewController, UICollectionViewDelegate, UICollectionV
     {
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier(reuseIdentifier, forIndexPath: indexPath) as MenuCell
         
-        cell.icon.image = UIImage(named: "RoundIcons-Free-Set-\((indexPath.row+1) % 61)")
+        cell.icon.image = UIImage(named: "RoundIcons-Free-Set-\(indexPath.row % 61 + 1)")
     
         return cell
     }
