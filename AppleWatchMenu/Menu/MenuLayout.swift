@@ -11,7 +11,7 @@ import UIKit
 class MenuLayout: UICollectionViewLayout
 {
     let itemSize = CGSizeMake(64, 64)
-    let contentSize = CGSizeMake(1000, 1000)
+    var contentSize = CGSizeZero
     
     required init(coder aDecoder: NSCoder)
     {
@@ -20,19 +20,19 @@ class MenuLayout: UICollectionViewLayout
     
     override func collectionViewContentSize() -> CGSize
     {
-        return contentSize
+        if let collection = self.collectionView as? MenuCollectionView {
+            let scale = self.collectionScale()
+            let baseSize = self.collectionBaseContentSizeWithItemCount(self.collectionView!.numberOfItemsInSection(0))
+            self.contentSize.width = baseSize.width * scale < self.collectionView!.frame.size.width ? self.contentSize.width : baseSize.width * scale
+            self.contentSize.height = baseSize.height * scale < self.collectionView!.frame.size.height ? self.contentSize.height : baseSize.height * scale
+        }
+        return self.contentSize
     }
-    
-//    override func prepareForCollectionViewUpdates(updateItems: [AnyObject]!)
-//    {
-//    }
     
     override func initialLayoutAttributesForAppearingItemAtIndexPath(itemIndexPath: NSIndexPath) -> UICollectionViewLayoutAttributes?
     {
-        super.initialLayoutAttributesForAppearingItemAtIndexPath(itemIndexPath)
         let attributes = self.layoutAttributesForItemAtIndexPath(itemIndexPath)
         attributes.transform = CGAffineTransformMakeScale(0.1, 0.1);
-        
         return attributes;
     }
     
@@ -47,7 +47,6 @@ class MenuLayout: UICollectionViewLayout
                 attributes.append(self.layoutAttributesForItemAtIndexPath(path))
             }
         }
-        
         return attributes
     }
     
@@ -55,15 +54,15 @@ class MenuLayout: UICollectionViewLayout
     {
         var attributes = UICollectionViewLayoutAttributes(forCellWithIndexPath: indexPath)
         attributes.frame = self.frameForItemAtIndexPath(indexPath)
-        
+
+        // Calculate item scale depending on distance from screen center
         var visibleRect = CGRect(origin: self.collectionView!.contentOffset, size: self.collectionView!.bounds.size)
-        let dx = (CGRectGetMidX(visibleRect) - attributes.center.x) / 160.0
-        let dy = (CGRectGetMidY(visibleRect) - attributes.center.y) / 280.0
+        let dx = (CGRectGetMidX(visibleRect) - attributes.center.x) / (self.collectionView!.frame.size.width / 2.0)
+        let dy = (CGRectGetMidY(visibleRect) - attributes.center.y) / (self.collectionView!.frame.size.height / 2.0)
         let scale = 1 - sqrt(dx*dx + dy*dy)
-        let scaleFixed = (1 - sqrt(dx*dx + dy*dy)) < 0.3 ? 0.3 : scale
+        let scaleFixed = scale < 0.25 ? 0.25 : scale
 
         attributes.size = CGSizeMake(attributes.size.width * scaleFixed, attributes.size.height * scaleFixed)
-//        attributes.transform = CGAffineTransformScale(CGAffineTransformIdentity, scaleFixed, scaleFixed)
         return attributes
     }
     
@@ -88,11 +87,12 @@ class MenuLayout: UICollectionViewLayout
     func frameForItemAtIndexPath(indexPath: NSIndexPath) -> CGRect
     {
         let center = CGPointMake(self.contentSize.width/2 - self.itemSize.width/2, self.contentSize.height/2 - itemSize.height/2)
-        let offset = CGFloat(self.offsetForItem(indexPath.row))
-        let angle = CGFloat(self.angleForItem(indexPath.row))
+        let offset = self.offsetForItem(indexPath.row)
+        let angle = self.angleForItem(indexPath.row)
         let origin = CGPoint(x: CGFloat(center.x + offset * cos(angle)), y: CGFloat(center.y + offset * sin(angle)))
+        let scale = self.collectionScale()
         
-        return CGRect(x: origin.x, y: origin.y, width: self.itemSize.width, height: self.itemSize.height)
+        return CGRect(x: origin.x, y: origin.y, width: self.itemSize.width * scale, height: self.itemSize.height * scale)
     }
     
     func itemMaxCountForLayer(layer: Int) -> Int
@@ -135,18 +135,32 @@ class MenuLayout: UICollectionViewLayout
         return index - lowerLayerItemCount
     }
     
-    func offsetForItem(index: Int) -> Double
+    func offsetForItem(index: Int) -> CGFloat
     {
         let layerIndex = self.layerIndexForItemAtIndex(index)
-        return Double(layerIndex) * Double(self.itemSize.width) - Double(layerIndex*3) // Double(layerIndex*3) tightenes farther items to center
+        return CGFloat(layerIndex) * CGFloat(self.itemSize.width * self.collectionScale()) - CGFloat(layerIndex*1) // Double(layerIndex*3) tightenes farther items to center
     }
     
-    func angleForItem(index: Int) -> Double
+    func angleForItem(index: Int) -> CGFloat
     {
         let itemCountOnLayer = self.itemCountOnLayer(self.layerIndexForItemAtIndex(index))
         let itemRelativeIndex = self.relativeItemIndex(index)
-        return M_PI * 2 / Double(itemCountOnLayer) * Double(itemRelativeIndex)
+//        return CGFloat(M_PI) * 2.0 / CGFloat(itemCountOnLayer * itemRelativeIndex) // BUG, but why?
+        return CGFloat(M_PI * 2 / Double(itemCountOnLayer) * Double(itemRelativeIndex))
     }
     
+    func collectionScale() -> CGFloat
+    {
+        let collection = self.collectionView as MenuCollectionView
+        return collection.scale
+    }
+    
+    func collectionBaseContentSizeWithItemCount(count: Int) -> CGSize
+    {
+        let layerCount = self.layerIndexForItemAtIndex(count)
+        let width = CGFloat(layerCount * 2 + 3) * self.itemSize.width
+        let height = CGFloat(layerCount * 3) * self.itemSize.height
+        return CGSizeMake(width, height)
+    }
     
 }

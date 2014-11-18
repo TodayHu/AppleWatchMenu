@@ -33,10 +33,10 @@ class ViewController : UIViewController, UICollectionViewDelegate, UICollectionV
     
     override func viewDidAppear(animated: Bool)
     {
-        self.collectionView.centerContent()
         self.numberOfItems = 127;
-        var indexPaths:[NSIndexPath] = []
+        self.collectionView.centerContentWithItemCount(self.numberOfItems)
         
+        var indexPaths:[NSIndexPath] = []
         for index in 0..<self.numberOfItems {
             indexPaths.append(NSIndexPath(forItem: index, inSection: 0))
         }
@@ -63,41 +63,7 @@ class ViewController : UIViewController, UICollectionViewDelegate, UICollectionV
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell
     {
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier(reuseIdentifier, forIndexPath: indexPath) as MenuCell
-        
         cell.icon.image = UIImage(named: "RoundIcons-Free-Set-\(indexPath.row % 61 + 1)")
-    
         return cell
     }
-
-    // MARK: UICollectionViewDelegate
-
-    /*
-    // Uncomment this method to specify if the specified item should be highlighted during tracking
-    override func collectionView(collectionView: UICollectionView, shouldHighlightItemAtIndexPath indexPath: NSIndexPath) -> Bool {
-        return true
-    }
-    */
-
-    /*
-    // Uncomment this method to specify if the specified item should be selected
-    override func collectionView(collectionView: UICollectionView, shouldSelectItemAtIndexPath indexPath: NSIndexPath) -> Bool {
-        return true
-    }
-    */
-
-    /*
-    // Uncomment these methods to specify if an action menu should be displayed for the specified item, and react to actions performed on the item
-    override func collectionView(collectionView: UICollectionView, shouldShowMenuForItemAtIndexPath indexPath: NSIndexPath) -> Bool {
-        return false
-    }
-
-    override func collectionView(collectionView: UICollectionView, canPerformAction action: Selector, forItemAtIndexPath indexPath: NSIndexPath, withSender sender: AnyObject?) -> Bool {
-        return false
-    }
-
-    override func collectionView(collectionView: UICollectionView, performAction action: Selector, forItemAtIndexPath indexPath: NSIndexPath, withSender sender: AnyObject?) {
-    
-    }
-    */
-
 }
