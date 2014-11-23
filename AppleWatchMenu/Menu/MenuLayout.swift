@@ -12,6 +12,8 @@ class MenuLayout: UICollectionViewLayout
 {
     let itemSize = CGSizeMake(64, 64)
     var contentSize = CGSizeZero
+    var layerMaxCountCache = NSMutableDictionary()
+    var layerIndexCache = NSMutableDictionary()
     
     required init(coder aDecoder: NSCoder)
     {
@@ -97,10 +99,15 @@ class MenuLayout: UICollectionViewLayout
     
     func itemMaxCountForLayer(layer: Int) -> Int
     {
+        if let count = self.layerMaxCountCache.objectForKey(layer) as? Int {
+            return count
+        }
+        
         var itemCount : Int = 1
         for index in 0..<layer {
             itemCount += (index + 1) * 6
         }
+        self.layerMaxCountCache.setObject(itemCount, forKey: layer)
         return itemCount
     }
     
@@ -114,6 +121,10 @@ class MenuLayout: UICollectionViewLayout
     
     func layerIndexForItemAtIndex(index: Int) -> Int
     {
+        if let index = self.layerIndexCache.objectForKey(index) as? Int {
+            return index
+        }
+        
         var layerIndex: Int = 0
         while (true) {
             if index < itemMaxCountForLayer(layerIndex) {
@@ -121,6 +132,7 @@ class MenuLayout: UICollectionViewLayout
             }
             layerIndex++
         }
+        self.layerIndexCache.setObject(layerIndex, forKey: index)
         return layerIndex
     }
     
@@ -145,7 +157,6 @@ class MenuLayout: UICollectionViewLayout
     {
         let itemCountOnLayer = self.itemCountOnLayer(self.layerIndexForItemAtIndex(index))
         let itemRelativeIndex = self.relativeItemIndex(index)
-//        return CGFloat(M_PI) * 2.0 / CGFloat(itemCountOnLayer * itemRelativeIndex) // BUG, but why?
         return CGFloat(M_PI * 2 / Double(itemCountOnLayer) * Double(itemRelativeIndex))
     }
     

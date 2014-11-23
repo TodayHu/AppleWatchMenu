@@ -15,6 +15,7 @@ class MenuCell: UICollectionViewCell {
     override init(frame: CGRect)
     {
         super.init(frame: frame)
+        self.opaque = true
         icon.setTranslatesAutoresizingMaskIntoConstraints(false)
         self.addSubview(icon)
         setupConstraints()
